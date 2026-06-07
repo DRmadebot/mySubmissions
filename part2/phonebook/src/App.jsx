@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import axios from 'axios'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import personService from './services/persons'
+import Notification from './components/Notification'
+import Error from './components/Error'
+import './index.css'
+
 
 
 const App = () => {
@@ -12,6 +16,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber]=useState('')
   const [newFilter,setNewFilter]=useState('')
+  const [message, setMessage]=useState(null)
+  const [error, setError]=useState(null)
 
   useEffect(()=>{
     personService
@@ -42,10 +48,11 @@ const App = () => {
     .create(newPerson)
     .then(returnedPerson=>{
       setPersons(persons.concat(returnedPerson))
+      setMessage(`added ${newPerson.name}`)
       setNewName('')
       setNewNumber('')
-    })
-      
+    
+    })      
     }
     else{
       const PERSON = persons.find(person=>person.name===newName)
@@ -55,11 +62,17 @@ const App = () => {
         .update(PERSON.id,updatedPerson)
         .then(returnedPerson=>{
           setPersons(persons.map(person=>person.id===PERSON.id?updatedPerson:person))
+          setMessage(`number of ${PERSON.name} changed`)
+        })
+        .catch(()=>{
+          setError(`Information of ${PERSON.name} has already been removed from the server`)
         })
         setNewName('')
         setNewNumber('')
       }
     }
+    setTimeout(()=>{setMessage(null)},5000)
+
   }
 
   const deletePerson=(id)=>{
@@ -71,17 +84,24 @@ const App = () => {
         .remove(id)
         .then(returnedPerson=>{
           setPersons(persons.filter(n=>n.id!==id))
+          setMessage(`${person_name} deleted`)
+        })
+        .catch(()=>{
+          setError(`information of ${person_name} does not exist in the server`)
         })        
       }
     }
     else{
       alert('Person does not exist')
     }
+    setTimeout(()=>{setMessage(null)},5000)
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Error message={error}/>
+      <Notification message={message}/>
       <Filter newFilter={newFilter} handleNewFilter={handleNewFilter}/>
       <h1>Add a new</h1>
       <PersonForm newName={newName} newNumber={newNumber} handleNewName={handleNewName} handleNewNumber={handleNewNumber} addNewPerson={addNewPerson}/>
