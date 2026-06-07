@@ -21,6 +21,7 @@ const CountriesToShow = ({filteredCountries, showThisCountry, weather})=>{
   if(filteredCountries.length==1){
     const country = filteredCountries[0]
     return(
+      
       <div>
         <h1>{country.name.common}</h1>
         <p>Capital {country.capital}</p>
@@ -31,9 +32,14 @@ const CountriesToShow = ({filteredCountries, showThisCountry, weather})=>{
         </ul>
         <img src={country.flags.png} alt={`flag of ${country.name.common}`}/>
         <h1>Weather in {country.capital}</h1>
-        <p>Temperature {weather.main.temp} Celsius</p>
-        <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}/>
-        <p>Wind {weather.wind.speed} m/s</p>
+        {weather.main?(
+          <div>
+          <p>Temperature {weather.main.temp} Celsius</p>
+          <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}/>
+          <p>Wind {weather.wind.speed} m/s</p>
+          </div>
+        ):(<p>loading weather...</p>)}
+        
       </div>
     )
   }
@@ -53,7 +59,6 @@ const App = () => {
   const handleNewCountry = (event)=>{
     event.preventDefault()
     setNewCountry(event.target.value)
-    console.log(event.target.value)
   }
   const filter=newCountry
   const filteredCountries=countries.filter(country=>country.name.common.toLowerCase().includes(filter.toLowerCase()))
