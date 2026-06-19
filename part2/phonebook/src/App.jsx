@@ -53,6 +53,12 @@ const App = () => {
       setNewNumber('')
     
     })      
+    .catch(error=>{
+      setError(error.response.data.error)
+      setTimeout(() => {
+        setError(null)
+      }, 5000)
+    })
     }
     else{
       const PERSON = persons.find(person=>person.name===newName)
@@ -61,11 +67,22 @@ const App = () => {
         personService
         .update(PERSON.id,updatedPerson)
         .then(returnedPerson=>{
-          setPersons(persons.map(person=>person.id===PERSON.id?updatedPerson:person))
+          setPersons(persons.map(person=>person.id===PERSON.id?returnedPerson:person))
           setMessage(`number of ${PERSON.name} changed`)
         })
-        .catch(()=>{
-          setError(`Information of ${PERSON.name} has already been removed from the server`)
+        .catch(error=>{
+          if (error.response && error.response.data.error){
+            setError(error.response.data.error)
+            setTimeout(() => {
+              setError(null)
+            }, 5000)
+          }
+          else{
+            setError(`Information of ${PERSON.name} has already been removed from the server`)
+            setTimeout(() => {
+              setError(null)
+            }, 5000)
+          }
         })
         setNewName('')
         setNewNumber('')
