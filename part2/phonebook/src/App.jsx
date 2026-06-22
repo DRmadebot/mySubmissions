@@ -62,6 +62,12 @@ const App = () => {
       }
       setTimeout(()=>{setError(null)},5000)      
     })      
+    .catch(error=>{
+      setError(error.response.data.error)
+      setTimeout(() => {
+        setError(null)
+      }, 5000)
+    })
     }
     else{
       const PERSON = persons.find(person=>person.name===newName)
