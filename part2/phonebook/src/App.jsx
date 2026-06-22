@@ -51,7 +51,16 @@ const App = () => {
       setMessage(`added ${newPerson.name}`)
       setNewName('')
       setNewNumber('')
-    
+      setTimeout(()=>{setMessage(null)},5000)
+    })
+    .catch(error=>{
+      if (error.response && error.response.data.error){
+        setError(error.response.data.error)
+      }
+      else{
+        setError(`Could not add this person to the phonebook`)
+      }
+      setTimeout(()=>{setError(null)},5000)      
     })      
     }
     else{
@@ -61,17 +70,24 @@ const App = () => {
         personService
         .update(PERSON.id,updatedPerson)
         .then(returnedPerson=>{
-          setPersons(persons.map(person=>person.id===PERSON.id?updatedPerson:person))
+          setPersons(persons.map(person=>person.id===PERSON.id?returnedPerson:person))
           setMessage(`number of ${PERSON.name} changed`)
+          setTimeout(()=>{setMessage(null)},5000)
         })
-        .catch(()=>{
-          setError(`Information of ${PERSON.name} has already been removed from the server`)
+        .catch(error=>{
+          if (error.response && error.response.data.error){
+            setError(error.response.data.error)
+          }
+          else{
+            setError('could not update this person')
+          }
+          setTimeout(()=>{setError(null)},5000)
         })
         setNewName('')
         setNewNumber('')
       }
     }
-    setTimeout(()=>{setMessage(null)},5000)
+    
 
   }
 
@@ -85,16 +101,18 @@ const App = () => {
         .then(returnedPerson=>{
           setPersons(persons.filter(n=>n.id!==id))
           setMessage(`${person_name} deleted`)
+          setTimeout(()=>{setMessage(null)},5000)
         })
         .catch(()=>{
-          setError(`information of ${person_name} does not exist in the server`)
+          setPersons(persons.filter(person => person.id !== id))
+          setError(`could not delete ${person_name}`)
+          setTimeout(()=>{setError(null)},5000)
         })        
       }
     }
     else{
       alert('Person does not exist')
     }
-    setTimeout(()=>{setMessage(null)},5000)
   }
 
   return (
